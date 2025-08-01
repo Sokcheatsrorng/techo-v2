@@ -23,7 +23,7 @@ public class SwaggerConfig {
 ////                        new Server().url("http://202.178.125.77:10500").description("Local Development Server")
 //                ));
                 .addServersItem(
-                        new Server().url("http://localhost:8081").description("TechCo API Server")
+                        new Server().url("http://localhost:3243").description("TechCo API Server")
                 );
 
     }

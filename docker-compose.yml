@@ -1,0 +1,53 @@
+services:
+  techo_istad:
+    container_name: techo_istad
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Bangkok
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://ishop-cont:5432/ishop_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345
+      # Ensure Spring Boot binds properly
+      SPRING_BOOT_SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: 8080
+    ports:
+      # Force Docker to bind host IPv4 explicitly
+      - "127.0.0.1:3243:8080"
+    volumes:
+      - "/home/istad/techo_istad/images:/home/ite/media"
+    depends_on:
+      - postgres
+    networks:
+      - ishop-network
+
+  postgres:
+    container_name: ishop-cont
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: ishop_db
+      POSTGRES_USER: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "3008:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ishop_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ishop-network
+
+networks:
+  ishop-network:
+    driver: bridge
+
+volumes:
+  pg_data:
+    driver: local
