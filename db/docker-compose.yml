@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ishop-cont
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: ishop_db
+      POSTGRES_USER: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "3008:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ishop_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  pg_data:
+    driver: local

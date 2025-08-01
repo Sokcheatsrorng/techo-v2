@@ -1,0 +1,25 @@
+DB_USERNAME: postgres
+DB_PASSWORD: 12345
+DB_HOST: 202.178.125.77
+DB_PORT: 3008
+DB_NAME: ishop_db
+
+GMAIL_USERNAME: techco.istad.co@gmail.com
+GMAIL_PASSWORD: fsfa gwcu swpu flmb
+EMAIL_SENDER: TechCo
+
+PAYMENT_ACCESS_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiYzIwOWMwNDYzNjBlNDEwMSJ9LCJpYXQiOjE3Mzc0NDA1MTQsImV4cCI6MTc0NTIxNjUxNH0.frEDXCd_iGyhM3NvM-aNzpOpQaBCWWjE7UqxWwri1-U
+#PAYMENT_ACCOUNT_NAME: SRENG CHIPOR
+PAYMENT_ACCOUNT_NUMBER: 500214565
+PAYMENT_BAKONG_ACCOUNT_ID: sreng_chipor@aclb
+PAYMENT_BAKONG_API_URL: https://api-bakong.nbc.gov.kh/
+PAYMENT_ACQUIRING_BANK: acleda
+MD5_VERIFICATION_URL: https://api-bakong.nbc.gov.kh/v1/check_transaction_by_md5
+
+MEDIA_SERVER_PATH: src/main/resources/filestorage/techco-medias/
+#MEDIA_BASE_URI: https://idonateapi.kangtido.life/media
+#MEDIA_BASE_URI: https://ishop-api.cheatdev.online/media
+MEDIA_BASE_URI: https://ishop-api.istad.co/media
+MEDIA_CLIENT_PATH: /media/**
+
+SPRING_ELASTICSEARCH_URIS: http://elasticsearch:3200

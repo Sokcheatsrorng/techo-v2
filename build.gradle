@@ -1,0 +1,121 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id "org.sonarqube" version "4.4.1.3373"
+}
+
+group = 'co.istad.techco'
+version = '0.0.1-SNAPSHOT'
+
+sonar {
+    properties {
+        property "sonar.projectKey", "my-spring-boot-app"
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.token", "squ_8d8644a061ac270ae32329a224a049615a7afc7d"
+        property "sonar.gradle.skipCompile", "true"
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+//configurations.all {
+//    resolutionStrategy {
+//        // Force Okio 3.0.0 and exclude 2.2.2 globally
+//        force 'com.squareup.okio:okio:3.0.0'
+//
+//        eachDependency { DependencyResolveDetails details ->
+//            if (details.requested.group == 'com.squareup.okio' && details.requested.version == '2.2.2') {
+//                details.useVersion '3.0.0'
+//            }
+//        }
+//    }
+//    // Aggressively exclude Okio 2.2.2 from all configurations
+//    exclude group: 'com.squareup.okio', module: 'okio'
+//}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // mapstruct
+    compileOnly 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+    // spring data jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    // for postgres
+    runtimeOnly 'org.postgresql:postgresql:42.7.4'
+
+    // swagger-ui
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
+//    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
+    // for mail service
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // spring boot actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+
+    // Bakong SDK
+    implementation 'kh.gov.nbc.bakong_khqr:sdk-java:1.0.0.11'
+
+    // QR Code
+    implementation 'com.google.zxing:core:3.5.1'
+    implementation 'com.google.zxing:javase:3.5.1'
+
+    // Explicit Okio dependency to ensure correct version
+    implementation 'com.squareup.okio:okio:3.0.0'
+
+    // Elasticsearch
+//    implementation 'org.springframework.data:spring-data-elasticsearch:5.1.0'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+//    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.9'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+//    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.1'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch:5.3.5'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters"
+}
+
+
