@@ -1,76 +1,71 @@
-name: Spring Boot CI/CD  # Define the workflow name
+name: Spring Boot CI/CD
 
 on:
   push:
-    branches: [ main ]  # Trigger CI/CD when code is pushed to the `development` branch
+    branches: [ main ]  # Triggers on push to main branch
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest  # Define the OS for the CI runner
-
-    env:
-      DB_HOST: ${{ secrets.HOSTED_DB_HOST }}  # Database host (from GitHub Secrets)
-      DB_PORT: ${{ secrets.HOSTED_DB_PORT }}  # Database port (usually 5432 for PostgreSQL)
-      DB_USERNAME: ${{ secrets.HOSTED_DB_USER }}  # Database username
-      DB_PASSWORD: ${{ secrets.HOSTED_DB_PASS }}  # Database password
-      DB_NAME: ${{ secrets.HOSTED_DB_NAME }}  # Database name
-#      SPRING_ELASTICSEARCH_URIS: ${{ secrets.SPRING_ELASTICSEARCH_URIS }} # Elasticsearch service URL
+    runs-on: ubuntu-latest
 
     steps:
-      # ✅ Step 1: Checkout Code
+      # Step 1: Checkout Code
       - name: Checkout code
-        uses: actions/checkout@v3  # Fetch the latest code from the repository
+        uses: actions/checkout@v4
 
-      # ✅ Step 2: Set Up JDK 17
+      # Step 2: Set Up JDK 17
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'  # Use Java 17
-          distribution: 'temurin'  # Use the Temurin JDK distribution
+          java-version: '17'
+          distribution: 'temurin'
 
-      # ✅ Step 3: Grant Execution Permission to Gradle Wrapper
+      # Step 3: Grant Execution Permission to Gradle Wrapper
       - name: Make Gradle wrapper executable
-        run: chmod +x gradlew  # Ensure `gradlew` can be executed
+        run: chmod +x gradlew
 
-      # ✅ Step 4: Build the Project
+      # Step 4: Build the Project
       - name: Build with Gradle
-        run: ./gradlew clean build  # Build the Spring Boot application using Gradle
+        run: ./gradlew clean build
 
-      # ✅ Step 5: Run Unit Tests
+      # Step 5: Run Unit Tests
       - name: Run Tests
-        run: ./gradlew test  # Execute the test cases
+        run: ./gradlew test
 
-      # ✅ Step 6: Deploy JAR File to the Remote Server
-      - name: Deploy to Development Server
+      # Step 6: Deploy JAR File to the Remote Server
+      - name: Deploy to Server
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.SERVER_HOST }}  # Remote server IP or domain
-          username: ${{ secrets.SERVER_USER }}  # SSH username
-          key: ${{ secrets.SSH_PRIVATE_KEY }}  # SSH private key (stored in GitHub Secrets)
-          port: 22  # Default SSH port
-          source: "build/libs/*.jar"  # Path to the JAR file (after Gradle build)
-          target: "/home/${{ secrets.SERVER_USER }}/app"  # Target directory on the server
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "build/libs/*.jar"
+          target: "/home/${{ secrets.SERVER_USER }}/app"
 
-      # ✅ Step 7: Restart the Application using Docker Compose on the Remote Server
-      - name: Restart Docker Compose Service in API Folder
-        uses: appleboy/ssh-action@v0.1.6
+      # Step 7: Restart Docker Compose Service on Remote Server
+      - name: Restart Docker Compose Service
+        uses: appleboy/ssh-action@v1.0.3  # Updated to a recent version
+        env:
+          DB_HOST: ${{ secrets.HOSTED_DB_HOST }}
+          DB_PORT: ${{ secrets.HOSTED_DB_PORT }}
+          DB_USERNAME: ${{ secrets.HOSTED_DB_USER }}
+          DB_PASSWORD: ${{ secrets.HOSTED_DB_PASS }}
+          DB_NAME: ${{ secrets.HOSTED_DB_NAME }}
         with:
-          host: ${{ secrets.SERVER_HOST }}  # Remote server IP or domain
-          username: ${{ secrets.SERVER_USER }}  # SSH username
-          key: ${{ secrets.SSH_PRIVATE_KEY }}  # SSH private key (from GitHub Secrets)
-          port: 22  # SSH port
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          envs: DB_HOST,DB_PORT,DB_USERNAME,DB_PASSWORD,DB_NAME
           script: |
-            # Navigate to the API deployment directory
+            set -e  # Fail on any error
             cd ~/deployment/api
             
-            # Stop running services using environment variables
-            DB_HOST=${{ secrets.HOSTED_DB_HOST }} DB_PORT=${{ secrets.HOSTED_DB_PORT }} \
-            DB_USERNAME=${{ secrets.HOSTED_DB_USER }} DB_PASSWORD=${{ secrets.HOSTED_DB_PASS }} \
-            DB_NAME=${{ secrets.HOSTED_DB_NAME }} \
+            # Stop services
+            $DB_HOST $DB_PORT $DB_USERNAME=$DB_USERNAME $DB_PASSWORD=$DB_PASSWORD $DB_NAME=$DB_NAME \
             docker-compose down
 
-            # Start the updated services with new JAR
-            DB_HOST=${{ secrets.HOSTED_DB_HOST }} DB_PORT=${{ secrets.HOSTED_DB_PORT }} \
-            DB_USERNAME=${{ secrets.HOSTED_DB_USER }} DB_PASSWORD=${{ secrets.HOSTED_DB_PASS }} \
-            DB_NAME=${{ secrets.HOSTED_DB_NAME }} \
-            docker-compose up -d --build  # Rebuild and start the services
+            # Start services with rebuild
+            $DB_HOST $DB_PORT $DB_USERNAME=$DB_USERNAME $DB_PASSWORD=$DB_PASSWORD $DB_NAME=$DB_NAME \
+            docker-compose up -d --build
