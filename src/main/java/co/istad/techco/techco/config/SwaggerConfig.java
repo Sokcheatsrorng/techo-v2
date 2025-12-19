@@ -15,7 +15,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info().title("TechCo API")
                         .version("v1")
-                        .description("Build trust using blockchain technology "))
+                        .description("Ecommerce Website which full options and functionalities. "))
 //                .servers(Arrays.asList(
 //                        new Server().url("https://ishop-api.istad.co").description("iShop API"),
 ////                        new Server().url("https://ishop-api.cheatdev.online").description("Production API")

@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -211,9 +213,20 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public BasedMessage deleteByUuid(String uuid) {
 
+        // Get the current authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        // Find the product
         Product product = productRepository.findByUuid(uuid).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found")
         );
+
+        // Check if current user is the owner/creator of the product
+        if (!product.getCreatedBy().equals(currentUsername)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You are not authorized to delete this product");
+        }
 
         productRepository.delete(product);
 

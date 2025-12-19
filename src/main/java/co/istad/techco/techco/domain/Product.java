@@ -82,4 +82,6 @@ public class Product {
     public List<ColorOption> getColorOptions() {
         return color;
     }
+
+  
 }
