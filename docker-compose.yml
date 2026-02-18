@@ -1,6 +1,6 @@
 services:
-  techo_istad:
-    container_name: techo_istad
+  techo_istad_v2:
+    container_name: techo_istad_v2
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,7 +16,7 @@ services:
       SERVER_PORT: 8080
     ports:
       # Force Docker to bind host IPv4 explicitly
-      - "127.0.0.1:3243:8080"
+      - "127.0.0.1:3245:8080"
     volumes:
       - "/home/istad/techo_istad/images:/home/ite/media"
     depends_on:
@@ -25,7 +25,7 @@ services:
       - ishop-network
 
   postgres:
-    container_name: ishop-cont
+    container_name: ishop-conti
     image: postgres:15-alpine
     environment:
       POSTGRES_PASSWORD: 12345
@@ -34,7 +34,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     ports:
-      - "3008:5432"
+      - "3018:5432"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d ishop_db"]

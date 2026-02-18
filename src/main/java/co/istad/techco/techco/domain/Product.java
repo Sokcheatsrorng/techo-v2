@@ -1,5 +1,6 @@
 package co.istad.techco.techco.domain;
 
+import co.istad.techco.techco.base.BaseConfig;
 import co.istad.techco.techco.converter.JsonConverter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product  extends BaseConfig {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

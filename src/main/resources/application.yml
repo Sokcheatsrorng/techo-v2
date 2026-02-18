@@ -107,5 +107,5 @@ media:
   base-uri: ${MEDIA_BASE_URI}
 
 server:
-  port: 3243
+  port: 3245
   address: 0.0.0.0
